@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -meu
 
 if [ "$1" == "neo4j" ]; then
 
@@ -60,7 +60,7 @@ if [ "$1" == "neo4j" ]; then
     if [ "${NEO4J_AUTH:-}" == "none" ]; then
         NEO4J_dbms_security_auth__enabled=false
     elif [[ "${NEO4J_AUTH:-}" == neo4j/* ]]; then
-        password="${NEO4J_AUTH#neo4j/}"
+        password="${-#neo4j/}"
         if [ "${password}" == "neo4j" ]; then
             echo "Invalid value for password. It cannot be 'neo4j', which is the default."
             exit 1
@@ -89,7 +89,18 @@ if [ "$1" == "neo4j" ]; then
 
     [ -f "${EXTENSION_SCRIPT:-}" ] && . ${EXTENSION_SCRIPT}
 
-    exec bin/neo4j console
+
+    bin/neo4j console &
+    while ! curl -s -I http://localhost:7474 | grep -q "200 OK"; do
+        sleep 20
+        echo 'Waiting for DB to come up...'
+    done
+    echo 'Made Warm Up call. Wait 3-4 minutes--------------------------------------------------'
+    bin/cypher-shell 'CALL apoc.warmup.run();'
+    fg %1
+    echo ''
+    echo 'Warmed Up & Ready!'
+
 elif [ "$1" == "dump-config" ]; then
     if [ -d /conf ]; then
         cp --recursive conf/* /conf

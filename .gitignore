@@ -1,1 +1,5 @@
+## SFTP
 sftp*
+
+## OSx FileSystem Artifacts
+*.DS*

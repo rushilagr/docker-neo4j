@@ -19,20 +19,6 @@ if [ "$1" == "neo4j" ]; then
     : ${NEO4J_ha_host_coordination:="$(hostname):5001"}
     : ${NEO4J_ha_host_data:="$(hostname):6001"}
 
-    # unset old hardcoded unsupported env variables
-    unset NEO4J_dbms_txLog_rotation_retentionPolicy NEO4J_UDC_SOURCE \
-        NEO4J_dbms_memory_heap_maxSize NEO4J_dbms_memory_heap_maxSize \
-        NEO4J_dbms_unmanagedExtensionClasses NEO4J_dbms_allowFormatMigration \
-        NEO4J_dbms_connectors_defaultAdvertisedAddress NEO4J_ha_serverId \
-        NEO4J_ha_initialHosts NEO4J_causalClustering_expectedCoreClusterSize \
-        NEO4J_causalClustering_initialDiscoveryMembers \
-        NEO4J_causalClustering_discoveryListenAddress \
-        NEO4J_causalClustering_discoveryAdvertisedAddress \
-        NEO4J_causalClustering_transactionListenAddress \
-        NEO4J_causalClustering_transactionAdvertisedAddress \
-        NEO4J_causalClustering_raftListenAddress \
-        NEO4J_causalClustering_raftAdvertisedAddress
-
     if [ -d /conf ]; then
         find /conf -type f -exec cp {} conf \;
     fi
@@ -89,7 +75,7 @@ if [ "$1" == "neo4j" ]; then
 
     [ -f "${EXTENSION_SCRIPT:-}" ] && . ${EXTENSION_SCRIPT}
 
-
+    ## Now begins the actual Execution
     bin/neo4j console &
     while ! curl -s -I http://localhost:7474 | grep -q "200 OK"; do
         sleep 20

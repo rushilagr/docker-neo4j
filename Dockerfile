@@ -5,9 +5,9 @@ RUN apk add --no-cache --quiet \
     curl \
     openssl
 
-ENV NEO4J_SHA256=65e1de8a025eae4ba42ad3947b7ecbf758a11cf41f266e8e47a83cd93c1d83d2 \
-    NEO4J_TARBALL=neo4j-community-3.2.3-unix.tar.gz
-ARG NEO4J_URI=http://dist.neo4j.org/neo4j-community-3.2.3-unix.tar.gz
+ENV NEO4J_SHA256=5cb4c30a257a5391dd055f5bca1df49bd9a96eb3200004550e444f01e8f9414b \
+    NEO4J_TARBALL=neo4j-enterprise-3.2.3-unix.tar.gz
+ARG NEO4J_URI=http://dist.neo4j.org/neo4j-enterprise-3.2.3-unix.tar.gz
 
 COPY ./local-package/* /tmp/
 

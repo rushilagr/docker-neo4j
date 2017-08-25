@@ -5,9 +5,9 @@ RUN apk add --no-cache --quiet \
     curl \
     openssl
 
-ENV NEO4J_SHA256=5cb4c30a257a5391dd055f5bca1df49bd9a96eb3200004550e444f01e8f9414b \
-    NEO4J_TARBALL=neo4j-enterprise-3.2.3-unix.tar.gz
-ARG NEO4J_URI=http://dist.neo4j.org/neo4j-enterprise-3.2.3-unix.tar.gz
+ENV NEO4J_SHA256=7d90638e65798ef057f32742fb4f8c87d4d2f13d7c06d7a4c093320bd4df3191 \
+    NEO4J_TARBALL=neo4j-enterprise-3.2.1-unix.tar.gz
+ARG NEO4J_URI=http://dist.neo4j.org/neo4j-enterprise-3.2.1-unix.tar.gz
 
 COPY ./local-package/* /tmp/
 
@@ -23,13 +23,26 @@ RUN curl --fail --silent --show-error --location --remote-name ${NEO4J_URI} \
 WORKDIR /var/lib/neo4j
 VOLUME /data
 
+# Disable security
+ENV NEO4J_AUTH=none
 
+# APOC procedure for warmup
 RUN wget https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/3.2.0.4/apoc-3.2.0.4-all.jar -P  ./plugins
 ENV NEO4J_dbms_security_procedures_unrestricted=apoc.warmup.\\\*
 
+# Db upgrades & backups
+ENV NEO4J_dbms_allow__format__migration=true
+ENV NEO4J_dbms_backup_enabled=true
+ENV NEO4J_dbms_backup_address=0.0.0.0:6362
+ENV NEO4J_dbms_connectors_default__listen__address=0.0.0.0
 
-ENV NEO4J_AUTH=none
+# HTTP logging
 ENV NEO4J_dbms_logs_http_enabled=true
+# Query logging
+ENV NEO4J_dbms_logs_query_enabled=true
+ENV NEO4J_dbms_logs_query_threshold=10
+ENV NEO4J_dbms_logs_query_time__logging__enabled=true
+ENV NEO4J_dbms_logs_query_page__logging__enabled=true
 
 
 EXPOSE 7474 7473 7687

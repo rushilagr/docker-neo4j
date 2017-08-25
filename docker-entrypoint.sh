@@ -76,10 +76,10 @@ if [ "$1" == "neo4j" ]; then
     [ -f "${EXTENSION_SCRIPT:-}" ] && . ${EXTENSION_SCRIPT}
 
     ## Now begins the actual Execution
-    bin/neo4j console &
+    exec bin/neo4j console &
     while ! curl -s -I http://localhost:7474 | grep -q "200 OK"; do
-        sleep 20
         echo 'Waiting for DB to come up...'
+        sleep 20
     done
     echo 'Made Warm Up call. Wait 3-4 minutes--------------------------------------------------'
     bin/cypher-shell 'CALL apoc.warmup.run();'
